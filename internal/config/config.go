@@ -24,6 +24,8 @@ func LoadConfig() (*viper.Viper, error) {
 		}
 	}
 
+	v.SetDefault("APP_PORT", "8080")
+
 	dsn := v.GetString("DATABASE_URL")
 	if dsn == "" {
 		dsn = v.GetString("database.url")
@@ -31,10 +33,6 @@ func LoadConfig() (*viper.Viper, error) {
 
 	if dsn == "" {
 		return nil, errors.New("DATABASE_URL (or database.url) is required")
-	}
-
-	if v.GetString("APP_PORT") == "" && v.GetString("app.port") == "" {
-		v.Set("APP_PORT", "8080")
 	}
 
 	return v, nil

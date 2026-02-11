@@ -2,6 +2,7 @@ package main
 
 import (
 	"fintrack-api/internal/config"
+	"fintrack-api/internal/database"
 	"fmt"
 	"net/http"
 
@@ -12,29 +13,26 @@ func main() {
 	// load config
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		zlog.Fatal().
-			Err(err).
-			Msg("failed to load config")
+		zlog.Fatal().Err(err).Msg("failed to load config")
 	}
 
 	// init logger (GLOBAL)
-	config.Init(cfg)
+	config.InitLogger(cfg)
+
+	// run migration
+	database.RunMigration(cfg.GetString("database.url"), &zlog.Logger)
+
+	// init database
+	config.NewDatabase(cfg, &zlog.Logger)
 
 	// ambil port dari config
 	port := cfg.GetString("app.port")
-	if port == "" {
-		port = "8080"
-	}
 
 	// log startup
-	zlog.Info().
-		Str("port", port).
-		Msg("server starting")
+	zlog.Info().Str("port", port).Msg("server starting")
 
-	// 6. start server
+	// start server
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
-		zlog.Fatal().
-			Err(err).
-			Msg("failed to start server")
+		zlog.Fatal().Err(err).Msg("failed to start server")
 	}
 }

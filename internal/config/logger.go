@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Init(cfg *viper.Viper) {
+func InitLogger(cfg *viper.Viper) {
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 
 	level := zerolog.InfoLevel
