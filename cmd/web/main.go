@@ -19,11 +19,17 @@ func main() {
 	// init logger (GLOBAL)
 	config.InitLogger(cfg)
 
-	// run migration
-	database.RunMigration(cfg.GetString("database.url"), &zlog.Logger)
-
 	// init database
-	config.NewDatabase(cfg, &zlog.Logger)
+	db, err := config.NewDatabase(cfg, &zlog.Logger)
+	if err != nil {
+		zlog.Fatal().Err(err).Msg("failed connect to database")
+	}
+	defer db.Close()
+
+	// run migration
+	if err := database.RunMigration(db, &zlog.Logger); err != nil {
+		zlog.Fatal().Err(err).Msg("failed migration")
+	}
 
 	// ambil port dari config
 	port := cfg.GetString("app.port")

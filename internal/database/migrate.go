@@ -1,32 +1,37 @@
 package database
 
 import (
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"context"
+	"fintrack-api/internal/database/migrations"
+
 	"github.com/rs/zerolog"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/migrate"
 )
 
-func RunMigration(dsn string, zlog *zerolog.Logger) {
-	m, err := migrate.New(
-		"file://internal/database/migrations",
-		dsn,
-	)
+func RunMigration(db *bun.DB, zlog *zerolog.Logger) error {
+	ctx := context.Background()
 
+	migrator := migrate.NewMigrator(db, migrations.Migrations)
+	if err := migrator.Init(ctx); err != nil {
+		return err
+	}
+
+	group, err := migrator.Migrate(ctx)
 	if err != nil {
-		zlog.Fatal().Err(err).Msg("migration init error")
+		return err
 	}
 
-	err = m.Up()
-
-	if err == migrate.ErrNoChange {
-		zlog.Info().Msg("migration skipped (no changes)")
-		return
+	var groupMigrations = len(group.Migrations)
+	if groupMigrations == 0 {
+		zlog.Info().Int("migrations_applied", groupMigrations).Msg("no new migrations to apply")
+		return nil
 	}
 
-	if err != nil {
-		zlog.Fatal().Err(err).Msg("migration run error")
-	}
+	zlog.Info().
+		Int64("migration_group", group.ID).
+		Int("migrations_applied", groupMigrations).
+		Msg("migration applied successfully")
 
-	zlog.Info().Msg("migration applied successfully")
+	return nil
 }
