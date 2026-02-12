@@ -1,11 +1,15 @@
 package models
 
-// import "time"
+import "time"
 
-// type UserModel struct {
-// 	ID          uint      `gorm:"primaryKey;autoIncrement"`
-// 	ClerkUserID string    `gorm:"type:text;not null;unique"`
-// 	Fullname    string    `gorm:"type:text"`
-// 	CreatedAt   time.Time `gorm:"autoCreateTime"`
-// 	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
-// }
+type UserModel struct {
+	ID          int64     `bun:"id,pk,autoincrement"`
+	ClerkUserID string    `bun:"clerk_user_id,notnull,unique"`
+	Fullname    *string   `bun:"fullname,nullzero"`
+	CreatedAt   time.Time `bun:"created_at,notnull"`
+	UpdatedAt   time.Time `bun:"updated_at,notnull"`
+}
+
+func (UserModel) TableName() string {
+	return "master.users"
+}
