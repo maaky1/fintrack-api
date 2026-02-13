@@ -32,6 +32,5 @@ func RunMigration(db *bun.DB, zlog *zerolog.Logger) error {
 		Int64("migration_group", group.ID).
 		Int("migrations_applied", groupMigrations).
 		Msg("migration applied successfully")
-
 	return nil
 }

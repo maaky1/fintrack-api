@@ -53,6 +53,5 @@ func NewDatabase(cfg *viper.Viper, zlog *zerolog.Logger) (*bun.DB, error) {
 		Int("pool_lifetime_seconds", maxLifeTimeConnection).
 		Bool("debug_sql", debug).
 		Msg("success connect to database")
-
 	return db, nil
 }

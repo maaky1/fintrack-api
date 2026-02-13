@@ -4,7 +4,6 @@ import (
 	"fintrack-api/internal/config"
 	"fintrack-api/internal/database"
 	"fmt"
-	"net/http"
 
 	zlog "github.com/rs/zerolog/log"
 )
@@ -31,6 +30,17 @@ func main() {
 		zlog.Fatal().Err(err).Msg("failed migration")
 	}
 
+	// Init Fiber
+	app := config.NewFiber(cfg, &zlog.Logger)
+
+	// Register routes / wiring
+	config.Bootstrap(&config.BootstrapConfig{
+		Config: cfg,
+		Logger: &zlog.Logger,
+		DB:     db,
+		App:    app,
+	})
+
 	// ambil port dari config
 	port := cfg.GetString("app.port")
 
@@ -38,7 +48,7 @@ func main() {
 	zlog.Info().Str("port", port).Msg("server starting")
 
 	// start server
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
+	if err := app.Listen(fmt.Sprintf(":%s", port)); err != nil {
 		zlog.Fatal().Err(err).Msg("failed to start server")
 	}
 }
