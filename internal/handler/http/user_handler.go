@@ -18,6 +18,16 @@ func NewUserHandler(userSvc service.UserService) *UserHandler {
 	return &UserHandler{userSvc: userSvc}
 }
 
+// CreateUser godoc
+// @Summary      Create user
+// @Description  Create user
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        body  body     dto.UserDto  true  "payload"
+// @Success      201   {object} map[string]any
+// @Failure      400   {object} map[string]any
+// @Router       /api/user [post]
 func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	ctx := c.UserContext()
 
@@ -40,6 +50,16 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	return response.Success(c, fiber.StatusCreated, "user created", created)
 }
 
+// GetByClerkUserID godoc
+// @Summary      Get user by Clerk User ID
+// @Description  Return user data by X-Clerk-User-Id header
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        X-Clerk-User-Id  header    string  true  "Clerk User ID"
+// @Success      200  {object}  map[string]any
+// @Failure      400  {object}  map[string]any
+// @Router       /api/user [get]
 func (h *UserHandler) GetByClerkUserID(c *fiber.Ctx) error {
 	ctx := c.UserContext()
 

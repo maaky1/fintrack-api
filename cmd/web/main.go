@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "fintrack-api/docs"
 	"fintrack-api/internal/config"
 	"fintrack-api/internal/database"
 	"fmt"
@@ -8,6 +9,10 @@ import (
 	zlog "github.com/rs/zerolog/log"
 )
 
+// @title           Fintrack API
+// @version         1.0
+// @description     API for Finance-track
+// @BasePath        /
 func main() {
 	// load config
 	cfg, err := config.LoadConfig()
