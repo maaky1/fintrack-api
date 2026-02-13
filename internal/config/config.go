@@ -24,8 +24,6 @@ func LoadConfig() (*viper.Viper, error) {
 		}
 	}
 
-	v.SetDefault("APP_PORT", "8080")
-
 	dsn := v.GetString("DATABASE_URL")
 	if dsn == "" {
 		dsn = v.GetString("database.url")
